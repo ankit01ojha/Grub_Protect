@@ -1,0 +1,66 @@
+Few weeks before in my Hostel my freind who is in Cyber security club of my club told me that I can password of Linux(basically the Linux he was referring was ubuntu ) from GRUB. I was like what the hell! How he can do this and if he can do this then he might change my password through GRUB. I thought that I am not going to him mine laptop for sure, then I asked him from where you got this knowledge, then he told me that he read this in blog of other member of the same club. After few days I came to know that many of freinds know about this, but the QUESTION is ONLY THE PASSWORD CAN BE CHANGED FROM GRUB OR OTHER THINGS CAN BE DONE TOO?
+
+Why to protect your BIOS with password?
+
+1. Preventing Changes to BIOS Settings — If an intruder has access to the BIOS, they can set it to boot off of a diskette or CD-ROM. This makes it possible for them to enter rescue mode or single user mode, which in turn allows them to seed nefarious programs on the system or copy sensitive data. 
+
+2. Preventing System Booting — Some BIOSes allow password protection of the boot process. When activated, an attacker is forced to enter a password before the BIOS launches the boot loader. 
+
+Why to protect Boot Loader with password?
+
+1.Preventing Access to Single User Mode — If an attacker can boot into single user mode, he becomes the root user. 
+
+2.Preventing Access to the GRUB Console — If the machine uses GRUB as its boot loader, an attacker can use the use the GRUB editor interface to change its configuration or to gather information using the cat command. 
+
+3.Preventing Access to Non-Secure Operating Systems — If it is a dual-boot system, an attacker can select at boot time an operating system, such as DOS, which ignores access controls and file permissions. 
+
+Now HOW TO ADD PASSWORD TO GRUB?
+-> Though I also don't know much about it so, I just googled and found out the answer and I am pasting the same thing wriiten which I found ,
+here it goes-
+
+	GRUB can be configured to address the first two issues listed in Section 4.2.2 Boot Loader Passwords by adding a password directive to its configuration file. To do this, first decide on a password, then open a shell prompt, log in as root, and type:
+
+/sbin/grub-md5-crypt
+
+When prompted, type the GRUB password and press [Enter]. This returns an MD5 hash of the password.
+
+Next, edit the GRUB configuration file /boot/grub/grub.conf. Open the file and below the timeout line in the main section of the document, add the following line:
+
+password --md5 <password-hash>
+
+Replace <password-hash> with the value returned by /sbin/grub-md5-crypt[2].
+
+The next time the system boots, the GRUB menu does not allow access to the editor or command interface without first pressing [p] followed by the GRUB password.
+
+Unfortunately, this solution does not prevent an attacker from booting into a non-secure operating system in a dual-boot environment. For this, a different part of the /boot/grub/grub.conf file must be edited.
+
+Look for the title line of the non-secure operating system and add a line that says lock directly beneath it.
+
+For a DOS system, the stanza should begin similar to the following:
+
+title DOS
+lock
+
+Warning	Warning
+ 	
+
+A password line must be present in the main section of the /boot/grub/grub.conf file for this method to work properly. Otherwise, an attacker can access the GRUB editor interface and remove the lock line.
+
+To create a different password for a particular kernel or operating system, add a lock line to the stanza followed by a password line.
+
+Each stanza protected with a unique password should begin with lines similar to the following example:
+
+title DOS
+lock
+password --md5 <password-hash>
+
+
+*some important notes that should be kept in mind-
+[1] Since system BIOSes differ between manufacturers, some may not support password protection of either type, while others may support one type but not the other. 
+
+[2] GRUB also accepts unencrypted passwords, but it is recommended that an md5 hash be used for added security.
+
+
+I haven't tried it but I think it should work, But I'll try it and post the answer.
+Think before you try it.
+TRY AT YOUR OWN RISK. 
